@@ -1403,6 +1403,50 @@ static void Resize(int newW, int newH)
 
 }
 
+/*
+ * handle a click in the menu area
+ */
+typedef struct MenuStruct {
+    int w, h;        // size of button
+    int ch;          // character to press
+    ActionType act;  // action to emulate
+} MenuItem;
+
+MenuItem menus[] = {
+    { 42, 28, '\e', ACTION_NONE },
+    { 40, 28, '\r', ACTION_NONE },
+    { 36, 28, 'i', ACTION_INVENTORY },
+    { 51, 28, 'd', ACTION_DROP },
+    { 57, 28, 'W', ACTION_WEAR },
+    { 58, 28, 'w', ACTION_WIELD },
+    { 57, 28, 'q', ACTION_QUAFF },
+    { 83, 28, 'T', ACTION_REMOVE_ARMOUR },
+    { 49, 28, '?', ACTION_HELP },
+    { 45, 28, 'Q', ACTION_QUIT },
+};
+
+#define NUM_MENU_ITEMS (sizeof(menus)/sizeof(menus[0]))
+#define MENU_BORDER 4
+
+static void
+handle_menu(int bx, int by)
+{
+    int i;
+    int x = 0;
+
+    for (i = 0; i < NUM_MENU_ITEMS; i++) {
+        x += menus[i].w;
+        if (bx < x) {
+            Event = menus[i].act;
+            GotChar = 0;
+            if (Event == ACTION_NONE) {
+                GotChar = 1;
+                EventChar = menus[i].ch;
+            }
+            return;
+        }
+    }
+}
 
 /* =============================================================================
  * FUNCTION: handle_mouse
@@ -1440,7 +1484,12 @@ handle_mouse(SDL_MouseButtonEvent *button)
     bx = button->x;
     by = button->y;
 
-    if ( CurrentDisplayMode == DISPLAY_MAP
+    if ( (bx >= MenuRect.x && (bx - MenuRect.x) < MenuRect.w)
+         && (by >= MenuRect.y && (by - MenuRect.y) < MenuRect.h - MENU_BORDER) )
+    {
+        handle_menu(bx - MenuRect.x, by - MenuRect.y);
+    }
+    else if ( CurrentDisplayMode == DISPLAY_MAP
          && (bx >= MapRect.x && (bx - MapRect.x) < MapRect.w)
          && (by >= MapRect.y && (by - MapRect.y) < MapRect.h) )
     {
