@@ -205,7 +205,8 @@ static Uint32 MidGrey_pixel;
 static Uint32 DkGrey_pixel;
 
 static TTF_Font *font_info;
-char * font_name = "lib/ConsolaMono.ttf";
+char * font_name = "lib/ularn_font.ttf";
+#define FONT_SIZE 14
 
 static SDL_Surface* TilePixmap = NULL;
 static SDL_Surface* TilePixmapKeyed = NULL;
@@ -1734,7 +1735,7 @@ int init_app(void)
   SDL_WM_SetCaption( "UVLarn", NULL );
 
   /* Set up font */
-  font_info = TTF_OpenFont(font_name, 12);
+  font_info = TTF_OpenFont(font_name, FONT_SIZE);
   if (!font_info)
     {
       fprintf(stderr, "Error: TTF_OpenFont: failed loading font '%s'\n", font_name);

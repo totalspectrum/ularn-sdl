@@ -1,3 +1,10 @@
+This is Ularn 1.6, patchlevel XX
+--------------------------------
+Ported to SDL by Eric R. Smith, Total Spectrum Software.
+
+New features:
+The ularn_font.ttf is the Liberation mono font from minetest.
+
 This is Ularn 1.6, patchlevel 3a, as of 3 May 2004.
 ---------------------------------------------------
 
