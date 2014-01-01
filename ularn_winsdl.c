@@ -185,7 +185,7 @@ int ularn_menu_height;
 //#define INITIAL_WIDTH 640
 //#define INITIAL_HEIGHT 480
 #define INITIAL_WIDTH 1024
-#define INITIAL_HEIGHT 640
+#define INITIAL_HEIGHT 768
 
 static SDL_Surface* ularn_window = NULL;
 
@@ -209,6 +209,7 @@ char * font_name = "lib/ConsolaMono.ttf";
 
 static SDL_Surface* TilePixmap = NULL;
 static SDL_Surface* TilePixmapKeyed = NULL;
+static SDL_Surface* MenuPixmap = NULL;
 
 static int CaretActive = 0;
 
@@ -232,6 +233,7 @@ static char EventChar;
 //
 
 static char *TileFilename = "lib/ularn_gfx.bmp";
+static char *MenuFilename = "lib/ularn_menu.bmp";
 
 /* Tiles for different character classes, (female, male) */
 static int PlayerTiles[8][2] =
@@ -418,6 +420,7 @@ SDL_Rect EffectsRect;
 // Message window position and size
 //
 SDL_Rect MessageRect;
+SDL_Rect MenuRect;
 
 //
 // Text window position, size
@@ -616,8 +619,8 @@ DrawString(int x, int y, const char *str, SDL_Color fg, SDL_Color bg)
 {
     SDL_Surface *text;
 
-//    text = TTF_RenderText_Shaded(font_info, str, fg, bg);
-    text = TTF_RenderText_Solid(font_info, str, fg);
+    text = TTF_RenderText_Shaded(font_info, str, fg, bg);
+//    text = TTF_RenderText_Solid(font_info, str, fg);
     if (text) {
         SDL_Rect dst;
 
@@ -1235,6 +1238,7 @@ static void PaintWindow(void)
   
   Repaint = 1;
 
+  SDL_BlitSurface(MenuPixmap, NULL, ularn_window, &MenuRect);
   if (CurrentDisplayMode == DISPLAY_MAP)
   {
     PaintMapWindow();
@@ -1294,18 +1298,24 @@ static void Resize(int newW, int newH)
   // Calculate the Effects window size and position
   //
   EffectsRect.x = ClientWidth - CharWidth * 10;
-  EffectsRect.y = 0;
+  EffectsRect.y = ularn_menu_height;
   EffectsRect.w = CharWidth * 10;
   EffectsRect.h = StatusRect.y - SEPARATOR_HEIGHT - EffectsRect.y;
 
   //
   // Calculate the size and position of the map window
   //
+  MapAreaRect.x = 0;
+  MapAreaRect.y = ularn_menu_height;
+
   MapRect.x = 0;
-  MapRect.y = 0;
+  MapRect.y = MapAreaRect.y;
   MapRect.w = EffectsRect.x - SEPARATOR_WIDTH;
   MapRect.h = StatusRect.y - SEPARATOR_HEIGHT - MapRect.y;
-  MapAreaRect = MapRect;
+
+  MapAreaRect.w = MapRect.w;
+  MapAreaRect.h = MapRect.h;
+
   MapTileRect = MapRect;
   MapTileRect.w = MapRect.w / TileWidth;
   MapTileRect.h = MapRect.h / TileHeight;
@@ -1318,14 +1328,15 @@ static void Resize(int newW, int newH)
   TextRect.h = CharHeight * MAX_TEXT_LINES;
 
   TextRect.x = (ClientWidth - TextRect.w) / 2;
-  TextRect.y = 
-    (ClientHeight - TextRect.h) / 2;
+  TextRect.y =
+      ularn_menu_height +
+      (ClientHeight - TextRect.h) / 2;
 
   //
   // Check if should draw a border around the text page when it is displayed
   //
   ShowTextBorder = (TextRect.x >= BORDER_SIZE) && 
-    (TextRect.y >= BORDER_SIZE);
+    (TextRect.y >= ularn_menu_height + BORDER_SIZE);
 
 
   //
@@ -1613,6 +1624,7 @@ static void handle_event(SDL_Event *event)
   } 
 }
 
+#if 0
 #define MASK_TILES 9
 static int MaskTiles[MASK_TILES][2] =
 {
@@ -1626,6 +1638,7 @@ static int MaskTiles[MASK_TILES][2] =
   { 247, 255 },
   { TILE_CURSOR1, TILE_CURSOR2 }
 };
+#endif
 
 /* =============================================================================
  * Exported functions
@@ -1689,6 +1702,19 @@ int init_app(void)
     }
 
   SDL_SetColorKey(TilePixmapKeyed, SDL_SRCCOLORKEY|SDL_RLEACCEL, 0);
+
+  MenuPixmap = SDL_LoadBMP(MenuFilename);
+  if (MenuPixmap == NULL)
+    {
+        fprintf(stderr, "Error reading pixmap: %s\n", MenuFilename);
+        return 0;
+    }
+
+  MenuRect.x = 0;
+  MenuRect.y = 0;
+  MenuRect.w = MenuPixmap->w;
+  MenuRect.h = MenuPixmap->h;
+  ularn_menu_height = MenuRect.h;
 
   //
   // Clear the text buffers
