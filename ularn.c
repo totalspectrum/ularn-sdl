@@ -49,6 +49,9 @@
 #ifdef WINDOWS
 #include <windows.h>
 #endif
+#ifdef SDL
+#include <SDL/SDL.h>
+#endif
 
 /* =============================================================================
  * Local variables
@@ -913,6 +916,65 @@ void parse (ActionType Action)
   }
 }
 
+static ActionType
+do_one_turn(void)
+{
+    ActionType Action = ACTION_NULL;
+
+    if (dropflag==0)
+    {
+      lookforobject(); /* see if there is an object here*/
+    }
+    else
+    {
+      dropflag=0;      /* don't show it just dropped an item */
+    }
+
+    if (hitflag == 0)
+    {
+      if (c[HASTEMONST]) movemonst();
+
+      movemonst();
+    }
+
+    if (viewflag==0)
+    {
+      showcell(playerx, playery);
+    }
+    else
+    {
+      viewflag = 0; /* show stuff around player */
+    }
+
+    hitflag = 0;
+    hit3flag = 0;
+
+    nomove = 1;
+
+    /*  get commands and make moves */
+    while (nomove)
+    {
+      nomove = 0;
+      Action = get_normal_input();
+      parse(Action);  /* may reset nomove=1 */
+    }
+
+    /* regenerate hp and spells */
+    regen();
+
+    if (c[TIMESTOP]==0)
+    {
+      rmst--;
+      if (rmst <= 0)
+      {
+        rmst = (char) (120-(level<<2));
+        fillmonst(makemonst(level));
+      }
+    }
+
+    return Action;
+}
+
 #ifdef WINDOWS
 
 /* windows uses WinMain instead of main */
@@ -987,7 +1049,7 @@ int main(int argc, char *argv[])
 #endif
 
 
-#ifdef UNIX_X11
+#if defined(UNIX_X11)
 
   init_app(getenv("DISPLAY"));
 
@@ -1077,57 +1139,10 @@ int main(int argc, char *argv[])
 
   do
   {
-    if (dropflag==0)
-    {
-      lookforobject(); /* see if there is an object here*/
-    }
-    else
-    {
-      dropflag=0;      /* don't show it just dropped an item */
-    }
-
-    if (hitflag == 0)
-    {
-      if (c[HASTEMONST]) movemonst();
-
-      movemonst();
-    }
-
-    if (viewflag==0)
-    {
-      showcell(playerx, playery);
-    }
-    else
-    {
-      viewflag = 0; /* show stuff around player */
-    }
-
-    hitflag = 0;
-    hit3flag = 0;
-
-    nomove = 1;
-
-    /*  get commands and make moves */
-    while (nomove)
-    {
-      nomove = 0;
-      Action = get_normal_input();
-      parse(Action);  /* may reset nomove=1 */
-    }
-
-    /* regenerate hp and spells */
-    regen();
-
-    if (c[TIMESTOP]==0)
-    {
-      rmst--;
-      if (rmst <= 0)
-      {
-        rmst = (char) (120-(level<<2));
-        fillmonst(makemonst(level));
-      }
-    }
-
+      Action = do_one_turn();
+#ifdef SDL
+      SDL_Delay(1);
+#endif
   } while (Action != ACTION_QUIT);
 
   /*
