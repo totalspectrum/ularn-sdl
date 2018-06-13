@@ -1,23 +1,25 @@
 
-CC=gcc
-LD=gcc
+CC=gcc -g
+LD=gcc -g
 RC=windres
 
 CFLAGS=-Wall -I/usr/include/X11R6 -DSDL
 LDFLAGS=-L/usr/X11R6/lib -lX11
 
-INSTALL_PATH=/usr/games
-LIB_PATH=/usr/lib/ularn
+#INSTALL_PATH=/usr/games
+#LIB_PATH=/usr/lib/ularn
+INSTALL_PATH=.
+LIB_PATH=/home/ersmith/games/ularn
 
 OBJECT=ularn.o ularn_winsdl.o ularn_game.o ularn_ask.o store.o sphere.o spell.o show.o scroll.o scores.o saveutils.o savegame.o potion.o player.o object.o monster.o itm.o help.o getopt.o fortune.o dungeon_obj.o dungeon.o diag.o action.o
 
 ularn_sdl: $(OBJECT)
 	$(LD) -o ularn_sdl $(OBJECT) -lSDL_ttf -lSDL -lXpm $(LDFLAGS)
 
-install: ularn lib/ularn_gfx.xpm lib/Uhelp lib/Ufortune lib/Umaps 
-	cp ularn $(INSTALL_PATH)
-	chmod 555 $(INSTALL_PATH)/ularn
-	mkdir $(LIB_PATH)
+install: ularn_sdl lib/ularn_gfx.xpm lib/Uhelp lib/Ufortune lib/Umaps 
+#	cp ularn_sdl $(INSTALL_PATH)
+#	chmod 555 $(INSTALL_PATH)/ularn
+	mkdir -p $(LIB_PATH)
 	cp lib/ularn_gfx.xpm $(LIB_PATH)
 	chmod 544 $(LIB_PATH)/ularn_gfx.xpm
 	cp lib/Uhelp $(LIB_PATH)

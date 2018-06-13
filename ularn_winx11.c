@@ -401,7 +401,7 @@ static XColor Green;
 static XColor Blue;
 
 static XFontStruct *font_info;
-char * font_name = "*-courier-medium-r-*-12-*";
+char * font_name = "*-courier-medium-r-*-14-*";
 
 static Pixmap TilePixmap = None;
 static Pixmap TilePShape = None;

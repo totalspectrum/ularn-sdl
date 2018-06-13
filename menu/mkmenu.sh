@@ -15,3 +15,4 @@ convert -background white -fill black -font Helvetica -size x20 -gravity center 
 convert -background white -fill black -font Helvetica -size x20 -gravity center label:Quit -frame 4 10_quit.png
 
 convert *.png +append ularn_menu.bmp
+rm -f *.png

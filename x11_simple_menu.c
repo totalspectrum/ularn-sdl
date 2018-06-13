@@ -83,7 +83,7 @@
  * Local variables
  */
 
-static char *menu_default_font = "*-helvetica-medium-r-*-12-*";
+static char *menu_default_font = "*-helvetica-medium-r-*-14-*";
 
 static Display *MenuDisplay;
 static Window  MenuWindow;

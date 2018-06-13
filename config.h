@@ -56,6 +56,7 @@
  * LIBDIR:
  * This symbol indicates where the data files will reside.
  */
-#define LIBDIR "/usr/lib/ularn"
+//#define LIBDIR "/usr/lib/ularn"
+#define LIBDIR "/home/ersmith/games/ularn"
 
 #endif

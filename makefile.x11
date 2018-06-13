@@ -3,7 +3,7 @@ CC=gcc
 LD=gcc
 RC=windres
 
-CFLAGS=-Wall -I/usr/include/X11R6
+CFLAGS=-Wall -I/usr/include/X11R6 -DUNIX_X11
 LDFLAGS=-L/usr/X11R6/lib -lX11
 
 INSTALL_PATH=/usr/games
